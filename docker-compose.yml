@@ -11,7 +11,11 @@ services:
     - 6379:6379
 
   sensu-enterprise:
-    build: "docker/sensu-enterprise/"
+    build:
+      context: "docker/sensu-enterprise/"
+      args:
+      - "SENSU_ENTERPRISE_REPO_USERNAME=${SENSU_ENTERPRISE_REPO_USERNAME}"
+      - "SENSU_ENTERPRISE_REPO_PASSWORD=${SENSU_ENTERPRISE_REPO_PASSWORD}"
     image: "sensu-enterprise:latest"
     networks:
     - "monitoring"
@@ -26,7 +30,11 @@ services:
     command: "/usr/bin/sensu-enterprise"
 
   sensu-enterprise-dashboard:
-    build: "docker/sensu-enterprise-dashboard/"
+    build:
+      context: "docker/sensu-enterprise-dashboard/"
+      args:
+      - "SENSU_ENTERPRISE_REPO_USERNAME=${SENSU_ENTERPRISE_REPO_USERNAME}"
+      - "SENSU_ENTERPRISE_REPO_PASSWORD=${SENSU_ENTERPRISE_REPO_PASSWORD}"
     image: "sensu-enterprise-dashboard:latest"
     networks:
     - "monitoring"
@@ -41,7 +49,8 @@ services:
     command: "/opt/sensu-enterprise-dashboard/bin/dashboard -c /etc/sensu/dashboard.json -p /opt/sensu-enterprise-dashboard/src/public"
 
   sensu-client:
-    build: "docker/sensu/"
+    build:
+      context: "docker/sensu/"
     image: "sensu-client:latest"
     networks:
     - "monitoring"
