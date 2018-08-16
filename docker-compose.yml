@@ -1,0 +1,60 @@
+---
+version: "3"
+services:
+  sensu-redis:
+    image: "redis:latest"
+    networks:
+    - "monitoring"
+    volumes:
+    - "./config/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+    ports:
+    - 6379:6379
+
+  sensu-enterprise:
+    build: "docker/sensu-enterprise/"
+    image: "sensu-enterprise:latest"
+    networks:
+    - "monitoring"
+    ports:
+    - 4567:4567
+    volumes:
+    - "./config/sensu/:/etc/sensu/"
+    labels:
+    - "io.sensu.description: The Sensu Enterprise server."
+    - "io.sensu.version: 3.1.0-1"
+    - "io.sensu.role: sensu-enterprise"
+    command: "/usr/bin/sensu-enterprise"
+
+  sensu-enterprise-dashboard:
+    build: "docker/sensu-enterprise-dashboard/"
+    image: "sensu-enterprise-dashboard:latest"
+    networks:
+    - "monitoring"
+    ports:
+    - 3000:3000
+    volumes:
+    - "./config/sensu/dashboard.json:/etc/sensu/dashboard.json"
+    labels:
+    - "io.sensu.description: The Sensu Enterprise Dashboard."
+    - "io.sensu.version: 2.9.0-1"
+    - "io.sensu.role: sensu-enterprise-dashboard"
+    command: "/opt/sensu-enterprise-dashboard/bin/dashboard -c /etc/sensu/dashboard.json -p /opt/sensu-enterprise-dashboard/src/public"
+
+  sensu-client:
+    build: "docker/sensu/"
+    image: "sensu-client:latest"
+    networks:
+    - "monitoring"
+    ports:
+    - 3030:3030
+    volumes:
+    - "./config/sensu/conf.d/client.json:/etc/sensu/conf.d/client.json"
+    labels:
+    - "io.sensu.description: The Sensu Client."
+    - "io.sensu.version: 1.4.0-1"
+    - "io.sensu.role: sensu-client"
+    command: "/opt/sensu/bin/sensu-client"
+
+networks:
+  monitoring:
+    driver: "bridge"

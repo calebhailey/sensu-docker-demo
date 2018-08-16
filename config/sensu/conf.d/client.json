@@ -1,0 +1,22 @@
+{
+  "client": {
+    "name": "web-server-01",
+    "environment": "production",
+    "socket": {
+      "bind": "0.0.0.0",
+      "port": 3030
+    },
+    "subscriptions": [
+      "demo",
+      "webserver"
+    ]
+  },
+  "transport": {
+    "name": "redis",
+    "reconnect_on_error": true
+  },
+  "redis": {
+    "host": "sensu-redis",
+    "port": 6379
+  }
+}
